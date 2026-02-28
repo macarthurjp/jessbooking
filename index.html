@@ -1,141 +1,147 @@
-function doGet(e) {
-  const action = e.parameter.action;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JessMakeUP & Nails — Book Your Appointment</title>
 
-  if (action === "availability") {
-    return getAvailability(e);
-  }
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  if (action === "approve") {
-    return handleApproval(e.parameter.id, true);
-  }
+  <style>
+    body { margin: 0; padding: 0; background: #fafafa; font-family: 'Montserrat', sans-serif; color: #333; }
+    .container { max-width: 480px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.08); }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 34px; text-align: center; margin-bottom: 5px; color: #111; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; text-align: center; margin-top: 0; margin-bottom: 25px; color: #444; letter-spacing: 0.5px; }
+    label { font-size: 14px; font-weight: 500; margin-top: 18px; display: block; color: #444; }
+    input, select { width: 100%; padding: 12px; margin-top: 6px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; background: #fdfdfd; }
+    #time-slots { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .slot { padding: 10px 14px; background: #f1f1f1; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; font-size: 14px; transition: 0.2s; }
+    .slot:hover { background: #e7e7e7; }
+    .slot.selected { background: #111; color: #fff; border-color: #111; }
+    button { width: 100%; margin-top: 28px; padding: 15px; background: #111; color: white; border: none; border-radius: 8px; font-size: 17px; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; }
+    button:hover { background: #333; }
+    .message { margin-top: 22px; text-align: center; font-size: 15px; font-weight: 500; }
+    footer { text-align: center; margin-top: 40px; font-size: 13px; color: #777; font-family: 'Montserrat', sans-serif; }
+  </style>
+</head>
 
-  if (action === "reject") {
-    return handleApproval(e.parameter.id, false);
-  }
+<body>
 
-  return ContentService
-    .createTextOutput("Invalid action")
-    .setMimeType(ContentService.MimeType.TEXT);
-}
+  <div class="container">
+    <h1>JESSMAKEUP & NAILS</h1>
+    <h2>Book Your Appointment</h2>
 
-function getAvailability(e) {
-  const date = e.parameter.date;
+    <label>Full name</label>
+    <input type="text" id="name" name="name" placeholder="Your name" />
 
-  if (!date) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ error: "Missing date" }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
+    <label>Email</label>
+    <input type="email" id="email" name="email" placeholder="your@email.com" />
 
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const bookings = ss.getSheetByName("Bookings").getDataRange().getValues();
+    <label>Phone number</label>
+    <input type="text" id="phone" name="phone" placeholder="+1 555 555 5555" />
 
-  const settingsSheet = ss.getSheetByName("Settings");
-  const settingsRaw = settingsSheet.getRange("A1:A").getValues().filter(r => r[0] !== "");
-  const settings = settingsRaw.map(r =>
-    Utilities.formatDate(new Date(r[0]), Session.getScriptTimeZone(), "HH:mm")
-  );
+    <label>Service</label>
+    <select id="service" name="service">
+      <option value="">Select a service</option>
+      <option>Manicure</option>
+      <option>Pedicure</option>
+      <option>Gel Manicure</option>
+      <option>Acrylic Nails</option>
+      <option>Brow Lamination</option>
+      <option>Lash Lifting</option>
+      <option>Manicure + Pedicure</option>
+      <option>Gel Removal</option>
+    </select>
 
-  const takenSlots = bookings
-    .filter(r => r[5] === date && r[6])
-    .map(r => r[6]);
+    <label>Preferred date</label>
+    <input type="date" id="date" name="date" />
 
-  const available = settings.filter(time => !takenSlots.includes(time));
+    <label>Available time slots</label>
+    <div id="time-slots">Select a date to see available times.</div>
 
-  return ContentService
-    .createTextOutput(JSON.stringify({ available }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+    <input type="hidden" id="time" name="time" />
 
-function doPost(e) {
-  const data = Object.fromEntries(e.postData.contents.split("&").map(p => p.split("=")).map(([k,v]) => [k, decodeURIComponent(v)]));
+    <button id="reserve-btn">Request appointment</button>
 
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Bookings");
-  const id = Utilities.getUuid();
+    <div class="message" id="message"></div>
+  </div>
 
-  sheet.appendRow([
-    id,
-    data.name,
-    data.email,
-    data.phone,
-    data.service,
-    data.date,
-    data.time,
-    "Pending",
-    false
-  ]);
+  <footer>
+    © 2026 JessMakeUP • All rights reserved
+  </footer>
 
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbxGf8dkskolT9_C56wLuzG656tw4iodwtUrJRXtB39cmJyz2Nv9_Y00isjYFm74gzJOug/exec";
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxGf8dkskolT9_C56wLuzG656tw4iodwtUrJRXtB39cmJyz2Nv9_Y00isjYFm74gzJOug/exec";
 
-  GmailApp.sendEmail(
-    data.email,
-    "JessMakeUP — Appointment Request Received ✨",
-    "",
-    { htmlBody: `
-      <p>Hi ${data.name},</p>
-      <p>Your appointment request has been received.</p>
-      <p><strong>${data.service}</strong> on <strong>${data.date}</strong> at <strong>${data.time}</strong></p>
-    `}
-  );
+    const dateInput = document.getElementById("date");
+    const timeSlotsContainer = document.getElementById("time-slots");
+    const hiddenTimeInput = document.getElementById("time");
+    const messageBox = document.getElementById("message");
 
-  GmailApp.sendEmail(
-    "ing.arthur03@gmail.com",
-    "New appointment request received",
-    "",
-    { htmlBody: `
-      <p>New booking:</p>
-      <p>${data.name} — ${data.service}</p>
-      <p>${data.date} at ${data.time}</p>
-      <p>
-        <a href="${webAppUrl}?action=approve&id=${id}">Approve</a> |
-        <a href="${webAppUrl}?action=reject&id=${id}">Reject</a>
-      </p>
-    `}
-  );
+    dateInput.addEventListener("change", async () => {
+      const date = dateInput.value;
+      if (!date) return;
 
-  return ContentService
-    .createTextOutput(JSON.stringify({ status: "ok" }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+      timeSlotsContainer.innerHTML = "Loading...";
 
-function handleApproval(id, approved) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName("Bookings");
-  const data = sheet.getDataRange().getValues();
+      try {
+        const res = await fetch(`${WEB_APP_URL}?action=availability&date=${date}`);
+        const data = await res.json();
 
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] === id) {
+        timeSlotsContainer.innerHTML = "";
 
-      sheet.getRange(i + 1, 8).setValue(approved ? "Approved" : "Rejected");
-      sheet.getRange(i + 1, 9).setValue(approved ? false : true);
+        data.available.forEach((time) => {
+          const div = document.createElement("div");
+          div.className = "slot";
+          div.textContent = time;
 
-      if (approved) {
-        sendConfirmationEmail(
-          data[i][1],
-          data[i][2],
-          data[i][4],
-          data[i][5],
-          data[i][6]
-        );
+          div.onclick = () => {
+            document.querySelectorAll(".slot").forEach((s) => s.classList.remove("selected"));
+            div.classList.add("selected");
+            hiddenTimeInput.value = time;
+          };
+
+          timeSlotsContainer.appendChild(div);
+        });
+      } catch (err) {
+        timeSlotsContainer.innerHTML = "Error loading times.";
+      }
+    });
+
+    document.getElementById("reserve-btn").addEventListener("click", async () => {
+      const data = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        service: document.getElementById("service").value,
+        date: document.getElementById("date").value,
+        time: document.getElementById("time").value
+      };
+
+      if (!data.name || !data.email || !data.phone || !data.service || !data.date || !data.time) {
+        messageBox.textContent = "Please complete all fields.";
+        messageBox.style.color = "red";
+        return;
       }
 
-      return ContentService.createTextOutput(
-        approved ? "Appointment approved ✔️" : "Appointment rejected ❌"
-      );
-    }
-  }
+      messageBox.textContent = "Sending...";
+      messageBox.style.color = "#333";
 
-  return ContentService.createTextOutput("ID not found");
-}
+      try {
+        await fetch(WEB_APP_URL, {
+          method: "POST",
+          body: new URLSearchParams(data)
+        });
 
-function sendConfirmationEmail(name, email, service, date, time) {
-  GmailApp.sendEmail(
-    email,
-    "JessMakeUP — Appointment Confirmed ✨",
-    "",
-    { htmlBody: `
-      <p>Your appointment is confirmed:</p>
-      <p>${service} — ${date} at ${time}</p>
-    `}
-  );
-}
+        messageBox.textContent = "Your appointment request has been received ✨";
+        messageBox.style.color = "green";
+
+      } catch (err) {
+        messageBox.textContent = "Connection error.";
+        messageBox.style.color = "red";
+      }
+    });
+  </script>
+
+</body>
+</html>
