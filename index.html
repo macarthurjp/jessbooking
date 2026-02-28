@@ -71,77 +71,79 @@
   </footer>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxGf8dkskolT9_C56wLuzG656tw4iodwtUrJRXtB39cmJyz2Nv9_Y00isjYFm74gzJOug/exec";
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxGf8dkskolT9_C56wLuzG656tw4iodwtUrJRXtB39cmJyz2Nv9_Y00isjYFm74gzJOug/exec";
 
-    const dateInput = document.getElementById("date");
-    const timeSlotsContainer = document.getElementById("time-slots");
-    const hiddenTimeInput = document.getElementById("time");
-    const messageBox = document.getElementById("message");
+  const dateInput = document.getElementById("date");
+  const timeSlotsContainer = document.getElementById("time-slots");
+  const hiddenTimeInput = document.getElementById("time");
+  const messageBox = document.getElementById("message");
 
-    dateInput.addEventListener("change", async () => {
-      const date = dateInput.value;
-      if (!date) return;
+  dateInput.addEventListener("change", async () => {
+    const date = dateInput.value;
+    if (!date) return;
 
-      timeSlotsContainer.innerHTML = "Loading...";
+    timeSlotsContainer.innerHTML = "Loading...";
 
-      try {
-        const res = await fetch(`${WEB_APP_URL}?action=availability&date=${date}`);
-        const data = await res.json();
+    try {
+      const res = await fetch(`${WEB_APP_URL}?action=availability&date=${date}`);
+      const data = await res.json();
 
-        timeSlotsContainer.innerHTML = "";
+      timeSlotsContainer.innerHTML = "";
 
-        data.available.forEach((time) => {
-          const div = document.createElement("div");
-          div.className = "slot";
-          div.textContent = time;
+      data.available.forEach((time) => {
+        const div = document.createElement("div");
+        div.className = "slot";
+        div.textContent = time;
 
-          div.onclick = () => {
-            document.querySelectorAll(".slot").forEach((s) => s.classList.remove("selected"));
-            div.classList.add("selected");
-            hiddenTimeInput.value = time;
-          };
+        div.onclick = () => {
+          document.querySelectorAll(".slot").forEach((s) => s.classList.remove("selected"));
+          div.classList.add("selected");
+          hiddenTimeInput.value = time;
+        };
 
-          timeSlotsContainer.appendChild(div);
-        });
-      } catch (err) {
-        timeSlotsContainer.innerHTML = "Error loading times.";
-      }
-    });
+        timeSlotsContainer.appendChild(div);
+      });
+    } catch (err) {
+      timeSlotsContainer.innerHTML = "Error loading times.";
+    }
+  });
 
-    document.getElementById("reserve-btn").addEventListener("click", async () => {
-      const data = {
-        name: document.getElementById("name").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
-        service: document.getElementById("service").value,
-        date: document.getElementById("date").value,
-        time: document.getElementById("time").value
-      };
+  document.getElementById("reserve-btn").addEventListener("click", async () => {
+    const data = {
+      name: document.getElementById("name").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      service: document.getElementById("service").value,
+      date: document.getElementById("date").value,
+      time: document.getElementById("time").value
+    };
 
-      if (!data.name || !data.email || !data.phone || !data.service || !data.date || !data.time) {
-        messageBox.textContent = "Please complete all fields.";
-        messageBox.style.color = "red";
-        return;
-      }
+    if (!data.name || !data.email || !data.phone || !data.service || !data.date || !data.time) {
+      messageBox.textContent = "Please complete all fields.";
+      messageBox.style.color = "red";
+      return;
+    }
 
-      messageBox.textContent = "Sending...";
-      messageBox.style.color = "#333";
+    messageBox.textContent = "Sending...";
+    messageBox.style.color = "#333";
 
-      try {
-        await fetch(WEB_APP_URL, {
-          method: "POST",
-          body: new URLSearchParams(data)
-        });
+    try {
+      await fetch(WEB_APP_URL, {
+        method: "POST",
+        body: new URLSearchParams(data),
+        mode: "no-cors"   // 🔥 ESTO ELIMINA EL ERROR CORS
+      });
 
-        messageBox.textContent = "Your appointment request has been received ✨";
-        messageBox.style.color = "green";
+      // Aunque no podamos leer la respuesta, la petición SÍ llega al WebApp
+      messageBox.textContent = "Your appointment request has been received ✨";
+      messageBox.style.color = "green";
 
-      } catch (err) {
-        messageBox.textContent = "Connection error.";
-        messageBox.style.color = "red";
-      }
-    });
-  </script>
+    } catch (err) {
+      messageBox.textContent = "Connection error.";
+      messageBox.style.color = "red";
+    }
+  });
+</script>
 
 </body>
 </html>
