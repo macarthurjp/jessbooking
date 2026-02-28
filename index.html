@@ -1,243 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JessMakeUP - Book Your Appointment</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JessMakeUP & Nails — Book Your Appointment</title>
 
-    <style>
-        body {
-            font-family: "Inter", sans-serif;
-            background-color: #f7f7f7;
-            margin: 0;
-            padding: 0;
-        }
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-        .container {
-            max-width: 500px;
-            margin: 40px auto;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        h1 {
-            text-align: center;
-            font-weight: 800;
-            margin-bottom: 5px;
-        }
-
-        h2 {
-            text-align: center;
-            margin-top: 0;
-            font-weight: 600;
-            color: #555;
-        }
-
-        p.subtitle {
-            text-align: center;
-            color: #777;
-            margin-bottom: 25px;
-        }
-
-        label {
-            font-weight: 600;
-            margin-top: 15px;
-            display: block;
-        }
-
-        input,
-        select,
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 6px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-
-        button {
-            background-color: black;
-            color: white;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        .time-slots {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .time-slot {
-            padding: 10px 15px;
-            background: #eee;
-            border-radius: 6px;
-            cursor: pointer;
-            border: 1px solid #ccc;
-        }
-
-        .time-slot.selected {
-            background: black;
-            color: white;
-            border-color: black;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #777;
-            font-size: 14px;
-        }
-    </style>
+  <style>
+    body { margin: 0; padding: 0; background: #fafafa; font-family: 'Montserrat', sans-serif; color: #333; }
+    .container { max-width: 480px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.08); }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size: 34px; text-align: center; margin-bottom: 5px; color: #111; }
+    h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; text-align: center; margin-top: 0; margin-bottom: 25px; color: #444; letter-spacing: 0.5px; }
+    label { font-size: 14px; font-weight: 500; margin-top: 18px; display: block; color: #444; }
+    input, select { width: 100%; padding: 12px; margin-top: 6px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; background: #fdfdfd; }
+    #time-slots { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .slot { padding: 10px 14px; background: #f1f1f1; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; font-size: 14px; transition: 0.2s; }
+    .slot:hover { background: #e7e7e7; }
+    .slot.selected { background: #111; color: #fff; border-color: #111; }
+    button { width: 100%; margin-top: 28px; padding: 15px; background: #111; color: white; border: none; border-radius: 8px; font-size: 17px; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; }
+    button:hover { background: #333; }
+    .message { margin-top: 22px; text-align: center; font-size: 15px; font-weight: 500; }
+    footer { text-align: center; margin-top: 40px; font-size: 13px; color: #777; font-family: 'Montserrat', sans-serif; }
+  </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>JESSMAKEUP</h1>
-        <h2>Book Your Appointment</h2>
-        <p class="subtitle">MANICURE • PEDICURE • SELF-CARE</p>
 
-        <form id="booking-form">
-            <label>Full name</label>
-            <input type="text" id="name" placeholder="Your name" required />
+  <div class="container">
+    <h1>JESSMAKEUP & NAILS</h1>
+    <h2>Book Your Appointment</h2>
 
-            <label>WhatsApp number</label>
-            <input type="text" id="phone" placeholder="+352 6X XX XX XX" required />
+    <label>Full name</label>
+    <input type="text" id="name" name="name" placeholder="Your name" />
 
-            <label>Email</label>
-            <input type="email" id="email" placeholder="your@email.com" required />
+    <label>Email</label>
+    <input type="email" id="email" name="email" placeholder="your@email.com" />
 
-            <label>Service</label>
-            <select id="service" required>
-                <option value="">Select a service</option>
-                <option value="Manicure">Manicure</option>
-                <option value="Pedicure">Pedicure</option>
-                <option value="Manicure + Pedicure">Manicure + Pedicure</option>
-            </select>
+    <label>Phone number</label>
+    <input type="text" id="phone" name="phone" placeholder="+1 555 555 5555" />
 
-            <label>Preferred date</label>
-            <input type="date" id="date" required />
+    <label>Service</label>
+    <select id="service" name="service">
+      <option value="">Select a service</option>
+      <option>Manicure</option>
+      <option>Pedicure</option>
+      <option>Gel Manicure</option>
+      <option>Acrylic Nails</option>
+      <option>Brow Lamination</option>
+      <option>Lash Lifting</option>
+      <option>Manicure + Pedicure</option>
+      <option>Gel Removal</option>
+    </select>
 
-            <label>Available time slots</label>
-            <div id="time-slots" class="time-slots">
-                <p>Select a date to see available times.</p>
-            </div>
+    <label>Preferred date</label>
+    <input type="date" id="date" name="date" />
 
-            <input type="hidden" id="time" />
+    <label>Available time slots</label>
+    <div id="time-slots">Select a date to see available times.</div>
 
-            <button type="submit">Request appointment</button>
-        </form>
-    </div>
+    <input type="hidden" id="time" name="time" />
 
-    <footer>
-        © 2026 JessMakeUP - All rights reserved
-    </footer>
+    <button id="reserve-btn">Request appointment</button>
 
-    <script>
-    const WEB_APP_URL =
-        "https://script.google.com/macros/s/AKfycbxsPlzngXWHTB9MU3h9PpIVhuhFeFmUaN_kYsY5I_4cHsFO3bV09EuZtBbRxARc0uM9Cg/exec";
+    <div class="message" id="message"></div>
+  </div>
 
-    const dateInput = document.getElementById("date");
-    const timeSlotsContainer = document.getElementById("time-slots");
-    const hiddenTimeInput = document.getElementById("time");
+  <footer>
+    © 2026 JessMakeUP • All rights reserved
+  </footer>
 
-    // Cuando el usuario selecciona una fecha
-    dateInput.addEventListener("change", async () => {
-        const date = dateInput.value;
-        if (!date) return;
+ <script>
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxGf8dkskolT9_C56wLuzG656tw4iodwtUrJRXtB39cmJyz2Nv9_Y00isjYFm74gzJOUg/exec";
 
-        const availableSlots = await fetchAvailability(date);
-        updateTimeSlots(availableSlots);
-    });
+  const dateInput = document.getElementById("date");
+  const timeSlotsContainer = document.getElementById("time-slots");
+  const hiddenTimeInput = document.getElementById("time");
+  const messageBox = document.getElementById("message");
 
-    // Llamada al Apps Script para obtener disponibilidad
-    async function fetchAvailability(date) {
-        const response = await fetch(
-            `${WEB_APP_URL}?action=availability&date=${date}`
-        );
-        const data = await response.json();
-        return data.available;
+  dateInput.addEventListener("change", async () => {
+    const date = dateInput.value;
+    if (!date) return;
+
+    timeSlotsContainer.innerHTML = "Loading...";
+
+    try {
+      const res = await fetch(`${WEB_APP_URL}?action=availability&date=${date}`);
+      const data = await res.json();
+
+      timeSlotsContainer.innerHTML = "";
+
+      data.available.forEach((time) => {
+        const div = document.createElement("div");
+        div.className = "slot";
+        div.textContent = time;
+
+        div.onclick = () => {
+          document.querySelectorAll(".slot").forEach((s) => s.classList.remove("selected"));
+          div.classList.add("selected");
+          hiddenTimeInput.value = time;
+        };
+
+        timeSlotsContainer.appendChild(div);
+      });
+    } catch (err) {
+      timeSlotsContainer.innerHTML = "Error loading times.";
+    }
+  });
+
+  document.getElementById("reserve-btn").addEventListener("click", async () => {
+    const data = {
+      name: document.getElementById("name").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      service: document.getElementById("service").value,
+      date: document.getElementById("date").value,
+      time: document.getElementById("time").value
+    };
+
+    if (!data.name || !data.email || !data.phone || !data.service || !data.date || !data.time) {
+      messageBox.textContent = "Please complete all fields.";
+      messageBox.style.color = "red";
+      return;
     }
 
-    // Renderizar los botones de horarios
-    function updateTimeSlots(availableSlots) {
-        timeSlotsContainer.innerHTML = "";
+    messageBox.textContent = "Sending...";
+    messageBox.style.color = "#333";
 
-        if (!availableSlots || availableSlots.length === 0) {
-            timeSlotsContainer.innerHTML =
-                "<p>No available time slots for this date.</p>";
-            return;
-        }
+    try {
+      await fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
 
-        availableSlots.forEach((slot) => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.textContent = slot;
-            button.classList.add("time-slot");
+      messageBox.textContent = "Your appointment request has been received ✨";
+      messageBox.style.color = "green";
 
-            button.addEventListener("click", () =>
-                selectTimeSlot(slot, button)
-            );
-
-            timeSlotsContainer.appendChild(button);
-        });
+    } catch (err) {
+      messageBox.textContent = "Connection error.";
+      messageBox.style.color = "red";
     }
-
-    // Seleccionar un horario
-    function selectTimeSlot(slot, button) {
-        hiddenTimeInput.value = slot;
-
-        document
-            .querySelectorAll(".time-slot")
-            .forEach((btn) => btn.classList.remove("selected"));
-
-        button.classList.add("selected");
-    }
-
-    // Enviar reserva al Apps Script
-    document
-        .getElementById("booking-form")
-        .addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const data = {
-                name: document.getElementById("name").value,
-                phone: document.getElementById("phone").value,
-                email: document.getElementById("email").value,
-                service: document.getElementById("service").value,
-                date: document.getElementById("date").value,
-                time: document.getElementById("time").value,
-            };
-
-            await fetch(WEB_APP_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-
-            alert("Your appointment request has been sent!");
-            document.getElementById("booking-form").reset();
-            timeSlotsContainer.innerHTML =
-                "<p>Select a date to see available times.</p>";
-        });
+  });
 </script>
 
 </body>
 </html>
-
-
-
-
 
