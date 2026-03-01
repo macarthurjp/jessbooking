@@ -130,9 +130,11 @@
     try {
       await fetch(WEB_APP_URL, {
   method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
   body: new URLSearchParams(data)
 });
-
 
       // Aunque no podamos leer la respuesta, la petición SÍ llega al WebApp
       messageBox.textContent = "Your appointment request has been received ✨";
@@ -147,5 +149,6 @@
 
 </body>
 </html>
+
 
 
