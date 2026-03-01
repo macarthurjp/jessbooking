@@ -129,10 +129,10 @@
 
     try {
       await fetch(WEB_APP_URL, {
-        method: "POST",
-        body: new URLSearchParams(data),
-        mode: "no-cors"   // 🔥 ESTO ELIMINA EL ERROR CORS
-      });
+  method: "POST",
+  body: new URLSearchParams(data)
+});
+
 
       // Aunque no podamos leer la respuesta, la petición SÍ llega al WebApp
       messageBox.textContent = "Your appointment request has been received ✨";
@@ -147,4 +147,5 @@
 
 </body>
 </html>
+
 
